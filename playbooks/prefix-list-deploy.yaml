@@ -1,0 +1,21 @@
+---
+- name: Aplicar prefix-lists nos routers
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Verificar que a config renderizada existe
+      ansible.builtin.stat:
+        path: "rendered/{{ inventory_hostname }}.conf"
+      register: cfg_file
+      delegate_to: localhost
+
+    - name: Falhar se config não foi encontrada
+      ansible.builtin.fail:
+        msg: "Config rendered/{{ inventory_hostname }}.conf não existe! Precisa rodar render_configs antes."
+      when: not cfg_file.stat.exists
+
+    - name: Mostrar config que seria aplicada
+      cisco.ios.ios_config:
+        src: "rendered/{{ inventory_hostname }}.conf"
+        backup: false
