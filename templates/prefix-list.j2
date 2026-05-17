@@ -1,0 +1,20 @@
+!
+! ============================================================
+! Prefix-lists para {{ inventory_hostname }}
+! Geradas em: {{ ansible_date_time.iso8601 }}
+! Pipeline:   {{ lookup('env', 'CI_PIPELINE_ID') | default('local') }}
+! Commit:     {{ lookup('env', 'CI_COMMIT_SHA') | default('local') | truncate(8, True, '') }}
+! ============================================================
+!
+{% for pl_name in device_prefix_lists[inventory_hostname] %}
+!
+! {{ prefix_lists[pl_name].description }}
+!
+no ip prefix-list {{ pl_name }}
+{% for entry in prefix_lists[pl_name].entries %}
+ip prefix-list {{ pl_name }} seq {{ entry.seq }} {{ entry.action }} {{ entry.prefix }}{% if entry.le is defined %} le {{ entry.le }}{% endif %}{% if entry.ge is defined %} ge {{ entry.ge }}{% endif %}
+
+{% endfor %}
+{% endfor %}
+!
+end

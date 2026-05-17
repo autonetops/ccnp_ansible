@@ -1,13 +1,24 @@
 ---
-- name: Configurar prefix-lists dos routers
-  hosts: all
+- name: Renderizar prefix-lists para todos os routers
+  hosts: routers
   gather_facts: false
 
   tasks:
-    - name: Mostrar prefix-lists atribuídas a este device
-      ansible.builtin.debug:
-        msg: "{{ inventory_hostname }} usará: {{ device_prefix_lists[inventory_hostname] }}"
+    - name: Criar diretório de saída
+      ansible.builtin.file:
+        path: "{{ playbook_dir }}/../rendered"
+        state: directory
+        mode: '0755'
+      run_once: true
+      delegate_to: localhost
 
-    - name: Placeholder — push real entra no módulo deploy
+    - name: Renderizar prefix-list de {{ inventory_hostname }}
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/../templates/prefix-list.j2"
+        dest: "{{ playbook_dir }}/../rendered/{{ inventory_hostname }}.conf"
+        mode: '0644'
+      delegate_to: localhost
+
+    - name: Confirmar geração
       ansible.builtin.debug:
-        msg: "Aqui rodaria cisco.ios.ios_prefix_lists"
+        msg: "Renderizado: rendered/{{ inventory_hostname }}.conf"
