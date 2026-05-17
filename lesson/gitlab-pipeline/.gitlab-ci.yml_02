@@ -1,0 +1,30 @@
+default:
+  image: fuso19/autonetops_ansible:v3
+
+stages:
+  - build
+  - validate
+  - deploy
+
+check_versions:
+  stage: build
+  script:
+    - ansible --version
+    - ansible-galaxy collection list cisco.ios
+
+inventory_check:
+  stage: validate
+  script:
+    - ansible-inventory -i inventories/lab --list
+
+ping_devices:
+  stage: validate
+  image: alpine:latest
+  script:
+    - echo "Esse job usa uma imagem diferente"
+    - cat /etc/os-release
+
+deploy_placeholder:
+  stage: deploy
+  script:
+    - echo "Deploy ainda não — vídeo 2.x"

@@ -1,0 +1,21 @@
+stages:
+  - build
+  - validate
+  - deploy
+
+hello_build:
+  stage: build
+  script:
+    - echo "Hellow Build"
+    - pwd
+
+hello_validate:
+  stage: validate
+  script:
+    - echo "Estamos no stage Validate"
+
+hello_deploy:
+  stage: deploy
+  script:
+    - echo "Aqui vou aplicar a mudanca nos devices"
+

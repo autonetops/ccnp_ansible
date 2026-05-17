@@ -1,0 +1,10 @@
+ansible_network_os: cisco.nxos.nxos
+ansible_connection: network_cli
+ansible_user: "admin"
+ansible_password: "RG!_Yw200"
+ansible_become: true
+ansible_become_method: enable
+# ONLY THIS ONE WORKS RELIABLY
+ansible_network_cli_ssh_type: paramiko
+ansible_paramiko_macs: "hmac-sha2-256,hmac-sha1"
+#ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o MACs+=hmac-sha1 -o KexAlgorithms+=diffie-hellman-group14-sha1 -o HostKeyAlgorithms=+ssh-rsa"
