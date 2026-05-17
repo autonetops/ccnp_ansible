@@ -1,0 +1,44 @@
+---
+# Prefix-lists do core do lab — r1, r2, r3, r4
+# Topologia: r1↔r2 (eBGP via AS path), r3↔r4 (iBGP cluster sul)
+# Política: r1/r2 anunciam agregados, r3/r4 filtram do upstream
+
+prefix_lists:
+  # ===== R2 e R3: core =====
+  PL-CORE:
+    description: "Teste Core"
+    entries:
+      - seq: 10
+        action: permit
+        prefix: 10.0.0.0/16
+        le: 24
+      - seq: 20
+        action: permit
+        prefix: 10.1.0.0/16
+        le: 24
+      - seq: 100
+        action: deny
+        prefix: 0.0.0.0/0
+        le: 32
+
+  PL-IBGP-LOOPBACKS:
+    description: "Loopbacks dos peers iBGP — usado em route-reflector"
+    entries:
+      - seq: 10
+        action: permit
+        prefix: 1.1.0.1/24
+      - seq: 20
+        action: permit
+        prefix: 1.1.1.1/24
+
+
+# Atribuição por device
+device_prefix_lists:
+  r1:
+    - PL-IBGP-LOOPBACKS
+  r2:
+    - PL-CORE
+  r3:
+    - PL-CORE
+  r4:
+    - PL-IBGP-LOOPBACKS

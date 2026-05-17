@@ -1,0 +1,34 @@
+default:
+  image: fuso19/autonetops_ansible:v3
+
+stages:
+  - build
+  - validate
+  - deploy
+
+check_versions:
+  stage: build
+  script:
+    - ansible --version
+
+syntax_check:
+  stage: validate
+  before_script:
+    - echo "===== Preparando credenciais ====="
+    - echo "$ANSIBLE_VAULT_PASS" > .vault_pass
+    - chmod 600 .vault_pass
+    - echo "Vault pass file criado em $(pwd)/.vault_pass"
+  script:
+    - echo "===== Validando playbook + decrypt das prefix-lists ====="
+    - ansible-playbook playbooks/prefix-list.yaml
+        --vault-password-file .vault_pass
+        --syntax-check
+  after_script:
+    - echo "===== Limpando credenciais ====="
+    - rm -f .vault_pass
+    - ls -la .vault_pass 2>&1 || echo "Confirmado: arquivo removido"
+
+deploy_placeholder:
+  stage: deploy
+  script:
+    - echo "Deploy"
