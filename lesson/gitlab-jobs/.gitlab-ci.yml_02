@@ -1,0 +1,44 @@
+default:
+  image: $ANSIBLE_IMAGE
+  #before_script: source /.venv/bin/activate
+  
+stages:
+  - build
+  - deploy
+
+#.setup_venv:
+#  before_script:
+#    - source /.venv/bin/activate
+
+.venv_setup: &venv_setup
+  - source /.venv/bin/activate
+
+render_config:
+  stage: build
+  before_script:
+    - *venv_setup
+    - echo "$ANSIBLE_VAULT_PASS" > .vault_pass
+    - chmod 600 .vault_pass
+    - echo "Vault pass criado em $(pwd)/.vault_pass"
+  script:
+    - ansible-playbook playbooks/prefix-list.yaml -i inventory/inv.yaml --vault-password-file .vault_pass
+    - ls -lh rendered/
+  after_script:
+    - echo "Limpando Credenciais"
+    - rm -f .vault_pass
+    - ls -la .vault_pass
+  artifacts:
+    paths:
+      - rendered/
+    expire_in: 2 days
+
+deploy_config:
+  stage: deploy
+  before_script:
+    - *venv_setup
+    - echo "$ANSIBLE_VAULT_PASS" > .vault_pass
+    - chmod 600 .vault_pass
+  script:
+    - ls -lah
+    - pwd
+    - ansible-playbook playbooks/prefix-list-deploy.yaml -i inventory/inv.yaml --vault-password-file .vault_pass
