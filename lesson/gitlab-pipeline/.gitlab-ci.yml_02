@@ -6,25 +6,20 @@ stages:
   - validate
   - deploy
 
-check_versions:
+hello_build:
   stage: build
   script:
+    - source /.venv/bin/activate
     - ansible --version
     - ansible-galaxy collection list cisco.ios
 
-inventory_check:
+hello_validate:
   stage: validate
   script:
-    - ansible-inventory -i inventories/lab --list
+    - source /.venv/bin/activate
+    - ansible-inventory -i inventory/inv.yaml --list --vault-password-file ./.vault_pass.txt
 
-ping_devices:
-  stage: validate
-  image: alpine:latest
-  script:
-    - echo "Esse job usa uma imagem diferente"
-    - cat /etc/os-release
-
-deploy_placeholder:
+hello_deploy:
   stage: deploy
   script:
-    - echo "Deploy ainda não — vídeo 2.x"
+    - echo "Aqui vou aplicar a mudanca nos devices"
