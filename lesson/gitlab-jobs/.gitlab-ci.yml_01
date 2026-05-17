@@ -1,0 +1,43 @@
+default:
+  image: $ANSIBLE_IMAGE
+  #before_script: source /.venv/bin/activate
+  
+stages:
+  - build
+  - validate
+  - deploy
+
+#.setup_venv:
+#  before_script:
+#    - source /.venv/bin/activate
+
+.venv_setup: &venv_setup
+  - source /.venv/bin/activate
+
+hello_build:
+  stage: build
+  before_script:
+    - *venv_setup
+  script:
+    - ansible --version
+    - ansible-galaxy collection list cisco.ios
+
+hello_validate:
+  stage: validate
+  before_script:
+    - *venv_setup
+    - echo "$ANSIBLE_VAULT_PASS" > .vault_pass
+    - chmod 600 .vault_pass
+    - echo "Vault pass criado em $(pwd)/.vault_pass"
+  script:
+    - source /.venv/bin/activate
+    - ansible-inventory -i inventory/inv.yaml --list --vault-password-file .vault_pass
+  after_script:
+    - echo "Limpando Credenciais"
+    - rm -f .vault_pass
+    - ls -la .vault_pass
+
+hello_deploy:
+  stage: deploy
+  script:
+    - echo "Aqui vou aplicar a mudanca nos devices"
