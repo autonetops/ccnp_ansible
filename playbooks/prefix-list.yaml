@@ -1,6 +1,6 @@
 ---
 - name: Renderizar prefix-lists para todos os routers
-  hosts: routers
+  hosts: all
   gather_facts: false
 
   tasks:
