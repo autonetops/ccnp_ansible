@@ -15,7 +15,16 @@
         msg: "Config {{ playbook_dir }}/../rendered/{{ inventory_hostname }}.conf não existe! Precisa rodar render_configs antes."
       when: not cfg_file.stat.exists
 
-    - name: Mostrar config que seria aplicada
+    - name: Aplicar config
       cisco.ios.ios_config:
         src: "{{ playbook_dir }}/../rendered/{{ inventory_hostname }}.conf"
         backup: false
+
+    - name: Get Prefix-lists para {{ inventory_hostname }}
+      cisco.ios.ios_command:
+        commands: show ip prefix-list
+      register: show_output
+
+    - name: Mostrar output do show ip prefix-list
+      ansible.builtin.debug:
+        var: show_output.stdout_lines

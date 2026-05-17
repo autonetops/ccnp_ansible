@@ -12,6 +12,8 @@ stages:
 
 .venv_setup: &venv_setup
   - source /.venv/bin/activate
+  - chmod o-w .
+
 
 render_config:
   stage: build
@@ -41,4 +43,4 @@ deploy_config:
   script:
     - ls -lah
     - pwd
-    - ansible-playbook playbooks/prefix-list-deploy.yaml -i inventory/inv.yaml --vault-password-file .vault_pass
+    - ansible-playbook playbooks/prefix-list-deploy.yaml --vault-password-file .vault_pass
